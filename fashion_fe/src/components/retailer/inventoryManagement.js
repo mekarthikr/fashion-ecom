@@ -1,55 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { changeStatus, filterProducts, getProductCategory, individualProduct, retailerProductList, updateInventory } from "../../action/action";
+import { changeStatus, filterProducts, getProductCategory, individualProduct, retailerProductList, setItemsPerPage, setPageNumber, updateInventory } from "../../action/action";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select';
 import { Pagination } from '@mui/material';
 
 const InventoryManagement = () => {
 
+    const { user } = useSelector(state => state.userData)
+    const { products, product ,productCategory ,productSize ,currentPageNo ,totalPageCount ,itemsPerPage } = useSelector(state => state.productData)
+
     const variation = { "color": "", "price": "", "stock": "" }
     const value = { "Size": "", "variation": [variation] }
 
-    useEffect(()=>{
-
-        function check(){
-            
-        }
-        check()
-
-    })
-
-
-    const searchRef = useRef();
-    // const [trigger, setTrigger] = useState(false);
     const [filterStock, setFilterStock] = useState(false);
-    // const [productFilter, setProductFilter] = useState({})
     const [productVariation, setproductVariation] = useState([value]);
-    // const [additionalFilter, setAdditionalFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [searchFilter, setSearchFilter] = useState("")
-    const [pageCount, setPageCount] = useState()
-    const [productCount, setProductCount] = useState()
-    const [currentPage, setCurrentPage] = useState(1)
-    const [productPerPage, setProductPerPage] = useState(5)
-    const [skipProducts, setSkipProducts] = useState((currentPage - 1) * productPerPage)
     const [sort, setSort] = useState("productName")
     const [sortOrder, setSortOrder] = useState(1)
     const [selectedProduct, setSelectedProduct] = useState([])
 
     const dispatch = useDispatch();
     const naviagte = useNavigate()
-
-    const { user } = useSelector(state => state.userData)
-    const { products, product ,productCategory ,productSize } = useSelector(state => state.productData)
-    
-    // const { productCategory } = useSelector(state => state.productData)
-    // const { productSize } = useSelector(state => state.productData)
-
+    const searchRef = useRef();
 
     useEffect(() => {
-        user._id && dispatch(retailerProductList({ retailerId: user._id }))
+        user._id && dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder,currentPage:currentPageNo,limit:itemsPerPage}, { retailerId: user._id }))
         dispatch(getProductCategory())
     }, [user])
 
@@ -60,16 +38,12 @@ const InventoryManagement = () => {
 
 
     useEffect(() => {
-        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder }, { retailerId: user._id }))
-    }, [categoryFilter, sortOrder, sort, searchFilter, filterStock])
-
-
-
+        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder,currentPage:currentPageNo,limit:itemsPerPage}, { retailerId: user._id }))
+    }, [categoryFilter, sortOrder, sort, searchFilter, filterStock ,currentPageNo,itemsPerPage])
 
     const setStockFilter = () => {
         setFilterStock(!filterStock)
     }
-
 
     const getSingleProduct = (id) => {
         dispatch(individualProduct(id))
@@ -83,7 +57,6 @@ const InventoryManagement = () => {
         const { name, value } = event.target
         const values = [...productVariation]
         values[index].variation[ind][name] = value
-        // console.log(values)
         setproductVariation(values)
     }
 
@@ -96,18 +69,17 @@ const InventoryManagement = () => {
 
     const toggleProduct = (productid) => {
         dispatch(changeStatus(productid, { retailerId: user._id }))
-        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder }, { retailerId: user._id }))
+        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage:currentPageNo ,limit:itemsPerPage}, { retailerId: user._id }))
     }
 
     const submitInventory = (productId) => {
         dispatch(updateInventory(productId, { variation: productVariation }))
-        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder }, { retailerId: user._id }))
+        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage:currentPageNo ,limit:itemsPerPage}, { retailerId: user._id }))
     }
 
     const addSearchFilter = (event) => {
         event.preventDefault()
         setSearchFilter(searchRef.current.value)
-        // dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder }, { retailerId: user._id }))
     }
 
     const toggleCheck = (event) => {
@@ -138,10 +110,6 @@ const InventoryManagement = () => {
         }
     }
 
-    // useEffect(() => {
-    //     console.log(selectedProduct)
-    // }, [selectedProduct])
-
     const setSortState = (sort) => {
         setSort(sort)
         if (sortOrder === 1) {
@@ -164,18 +132,6 @@ const InventoryManagement = () => {
         setSelectedProduct([])
         setFilterStock(false)
     }
-
-
-    useEffect(() => {
-        products && setProductCount(products.length)
-    }, [products])
-
-    useEffect(() => {
-        productCount && setPageCount(Math.ceil(productCount / productPerPage))
-        setSkipProducts((currentPage - 1) * productPerPage)
-    }, [productCount, currentPage, productPerPage])
-
-
 
     return (
         <>
@@ -219,7 +175,7 @@ const InventoryManagement = () => {
                         </div>}
                     </div>
                     <div className="col-md-3  ml-4 d-flex align-items-center" style={{ marginLeft: "45px" }}>
-                        <div className="col-md-1  d-flex align-items-center mt-2 "><h6>Search:</h6></div>
+                        <div className="col-md-1  d-flex align-items-center mt-2 "><h6>Search</h6></div>
                         <form class="form-inline mx-auto  row" >
                             <div className="col-md-8 ml-4">
                                 <input class="form-control mr-sm-2" ref={searchRef} placeholder="Enter product name..." />
@@ -250,7 +206,8 @@ const InventoryManagement = () => {
                             {
                                 products.length ?
                                     <>{
-                                        products.slice(skipProducts, skipProducts + productPerPage).map((e, index) => {
+                                        products
+                                        .map((e, index) => {
                                             return (
                                                 <tr  >
                                                     <td style={{ width: "10px" }}>
@@ -296,7 +253,7 @@ const InventoryManagement = () => {
                 <div className="row mb-4 mt-4" >
                     <div className="col-md-2 row"  >
                         <p className="d-inline col-md-3 ml-4 pt-2">Show</p>
-                        <select class="form-select col-md-2" value={productPerPage} style={{ width: "80px", height: "40px" }} aria-label="Default select example" onChange={(event) => { setProductPerPage(event.target.value) }}>
+                        <select class="form-select col-md-2" value={itemsPerPage} style={{ width: "80px", height: "40px" }} aria-label="Default select example" onChange={(event) => { dispatch(setItemsPerPage(event.target.value)) }}>
                             <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="20">20</option>
@@ -304,7 +261,7 @@ const InventoryManagement = () => {
                         <p className="d-inline col-md-3 pt-2">Products</p>
                     </div>
                     <div className="d-flex justify-content-center  col-md-7">
-                        <Pagination count={pageCount} page={currentPage} onChange={(event, value) => { setCurrentPage(value) }} />
+                        <Pagination count={totalPageCount} page={currentPageNo} onChange={(event, value) => { dispatch(setPageNumber(value)) }} />
                     </div>
                 </div>
 

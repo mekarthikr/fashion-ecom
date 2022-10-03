@@ -397,7 +397,7 @@ class productController {
             const { outofstock } = req.query
             let products
             if (retailerId) {
-                if(req.query)
+                 if  (req.query)
                 {
                     let filter={}
                     if(req.query.category && req.query.category !=="all") filter.category=req.query.category
@@ -413,7 +413,14 @@ class productController {
                         {
                             $sort:{[sortby]:Number(orderby)}
                         }
+                        // ,
+                        // { '$facet'    : {
+                        //     pagination: [ {$addFields:{totalPages:  }}, { $addFields: { currentpage: req.query.page } } ],
+                        //     products: [ { $skip: (Number(req.query.page) - Number(req.query.limit)) > 0 ? (Number(req.query.page) - Number(req.query.limit)) : 1 }, { $limit: Number(req.query.limit) } ]
+                        // }}    
                     ])
+//
+                    // console.log(products)
 
                     if(outofstock==="true")
                     {
@@ -427,11 +434,23 @@ class productController {
                             if(!availability)
                                 return product
                         })
-                        return res.status(status.SUCCESS).json({ products,pages:{"dave":"dave"} })    
                     }
-                    else{
-                        return res.status(status.SUCCESS).json({ products })    
-                    }
+                    const totalPages= Math.ceil(products.length / req.query.limit ||1)
+                    // if(totalPages <= req.query.page )
+                    // {
+
+                    // // }
+                    console.log( "req", Number(req.query.page),totalPages)
+                    console.log( "req limit",((req.query.page)-1) * req.query.limit )
+                    
+
+                    const skipFrom= totalPages < Number(req.query.page) ? 1  : ((req.query.page)-1) * req.query.limit  ;
+                    console.log("skip from",skipFrom)
+                    const skipTo=(skipFrom+Number(req.query.limit))
+                    const data= products.slice(skipFrom,skipTo)
+                    console.log(skipFrom,skipTo)
+
+                    return res.status(status.SUCCESS).json({pagination:{"currentPage":Number( skipFrom === 1 ? totalPages : req.query.page),"totalPages":totalPages },products:data})
                 }
             }
         }

@@ -54,6 +54,11 @@ const productList = (payload) => ({
     type: types.GET_ALL_PRODUCTS,
     payload: payload
 })
+const pagination = (payload) => ({
+    type : types.HANDLE_PAGINATION,
+    payload: payload
+})
+
 
 const addToCart = () => ({
     type: types.ADD_CART_PRODUCT
@@ -77,6 +82,18 @@ const simpleProduct = (payload) => ({
 export const resetImage = () => ({
     type: types.RESET_PRODUCT_IMAGE,
 })
+
+
+export const setPageNumber = (payload) => ({
+    type: types.MANAGE_PAGE_NUMBER,
+    payload:payload
+})
+
+export const setItemsPerPage = (payload) => ({
+    type: types.MANAGE_ITEMS_PER_PAGE,
+    payload:payload
+})
+
 
 export const registerRetailer = (retailer) => {
     console.log("action call", retailer)
@@ -393,10 +410,11 @@ export const filterProducts = (filter,retailerid) => {
     // filter.search="peter"
     return function (disapatch) {
         axios
-            .post(`http://localhost:8000/products/filter?outofstock=${filter.stock}&category=${filter.category}&search=${filter.search}&sortby=${filter.sort}&orderby=${filter.order}&page=1`,retailerid)
+            .post(`http://localhost:8000/products/filter?outofstock=${filter.stock}&category=${filter.category}&search=${filter.search}&sortby=${filter.sort}&orderby=${filter.order}&page=${filter.currentPage}&limit=${filter.limit}`,retailerid)
             .then((res) => {
                 console.log("response : ", res.data.products)
                 disapatch(productList(res.data.products))
+                disapatch(pagination(res.data.pagination))
             })
     }
 }
@@ -418,3 +436,7 @@ export const searchProducts = (items) => {
             })
     }
 }
+
+
+
+

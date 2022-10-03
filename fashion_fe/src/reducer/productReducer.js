@@ -9,15 +9,37 @@ const initialState = {
     productImageUrl: '',
     cart: [],
     simpleProduct: [],
-    currentPageNo:1,
-    totalPageCount:1,
-    itemsPerPage:5,
+    currentPageNo: 1,
+    totalPageCount: 1,
+    itemsPerPage: 5,
     loading: true
 }
 
 const productReducer = (state = initialState, action) => {
     console.log("product reducer", action.type)
     switch (action.type) {
+        case types.HANDLE_PAGINATION:
+            return {
+                ...state,
+                loading: false,
+                // payload
+                currentPageNo: action.payload.totalPages === 1 ? 1 : action.payload.currentPage,
+                totalPageCount: action.payload.totalPages
+            }
+        case types.MANAGE_PAGE_NUMBER:
+            return {
+                ...state,
+                currentPageNo: action.payload,
+                loading: false
+            }
+        case types.MANAGE_ITEMS_PER_PAGE:
+            return {
+                ...state,
+                itemsPerPage: action.payload,
+                loading: false
+            }
+
+
         case types.REMOVE_FROM_CART:
             return {
                 ...state,
@@ -105,12 +127,12 @@ const productReducer = (state = initialState, action) => {
                 products: action.payload,
                 loading: false
             }
-            case types.RESET_PRODUCT_IMAGE:
-                return {
-                    ...state,
-                    productImageUrl: '',
-                    loading: false
-                }
+        case types.RESET_PRODUCT_IMAGE:
+            return {
+                ...state,
+                productImageUrl: '',
+                loading: false
+            }
         default:
             return state
     }
