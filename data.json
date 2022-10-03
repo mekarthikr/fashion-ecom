@@ -1,0 +1,28 @@
+{
+    "productName":"Allen Solly",
+    "SKUID":"ASS1",
+    "category":"Shirt",
+    "vartiations":[
+        {
+            "color":[
+                {
+                    "green":{
+                        "Size":"S",
+                        "Price":"12999",
+                        "Stock":"129"
+                    },
+                    "red":[{
+                        "Size":"M",
+                        "Price":"12999",
+                        "Stock":"129"
+                    },
+                    {
+                        "Size":"M",
+                        "Price":"12999",
+                        "Stock":"129"
+                    }]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+html,body{
+    height: 100%
+}
+.retailer-container {
+    display: flex;
+    text-decoration: none;
+}
+
+main {
+    width: 100%;
+}
+
+.sidebar {
+    background: black;
+    color: #fff;
+    height: 100vh;
+    transition: all 0.5s;
+    position: fixed;
+}
+
+@media only screen and (max-width: 0px) {}
+
+@media (max-width: 100px) {
+    .sidebar {
+        height: auto;
+    }
+}
+
+.top-section {
+    display: flex;
+    align-items: center;
+    padding: 20px 20px;
+}
+
+.logo {
+    font-size: 25px;
+}
+
+.bars {
+    display: flex;
+    font-size: 25px;
+    margin-left: 50px;
+}
+
+.link {
+    text-decoration: none;
+    display: flex;
+    color: #fff;
+    padding: 10px 15px;
+    gap: 15px;
+    transition: all 0.5s;
+}
+
+.link:hover {
+    background:  #0275d8 ;
+    color: #fff;
+    transition: all 0.5s;
+}
+
+.active {
+    background:  #0275d8 ;
+    color: black;
+}
+
+.icon,
+.link_text {
+    font-size: 18px;
+    padding: 0px;
+}
+
+.link_text {
+    margin-top: 10px;
+}
+
+.site-title {
+    font-family: 'Pacifico', cursive;
+}
+
+.retailer-panel-link {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.remove-button {
+    border: 0px;
+    background-color: #fff;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+
+.no-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/*Pagination*/
+.pagination-container {
+    display: flex;
+    list-style-type: none;
+    margin-left: 40%;
+    margin-right: 50%;
+}
+
+
+.sidenav {
+    height: 100%;
+    /* Full-height: remove this if you want "auto" height */
+    /* width: 160px; */
+    /* Set the width of the sidebar */
+    position: fixed;
+    /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1;
+    /* Stay on top */
+    top: 0;
+    /* Stay at the top */
+    right: 0;
+    background-color: rgb(255, 255, 255, 0.8);
+    /* Black */
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+    padding-top: 20px;
+    display: block;
+    /* opacity: 0.5; */
+}
+
+.home-image {
+    margin: 0 15px;
+    width: 80px;
+}
+
+.display-none{
+    display: none;
+}
+
+/* span {
+    display: none;
+} */
+
+input:invalid[focused="true"] ~ span  {
+    display: block;
+    /* { */
+        /* display: none; */
+        width: 100%;
+        margin-top: .25rem;
+        font-size: 14px;
+        color: #dc3545;
+        font-weight:bolder;
+
+      /* } */
+}
+
+input:invalid[focused="true"]{
+    /* display: block; */
+    /* { */
+        /* display: none; */
+        /* width: 100%; */
+        /* margin-top: .25rem;
+        font-size: .875em; */
+        /* color: #dc3545; */
+      /* } */
+      /* padding: 500px; */
+      border: 1px solid #dc3545 !important; 
+      /* border-color: #dc3545; */
+      /* background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 12 12%27 width=%2712%27 height=%2712%27 fill=%27none%27 stroke=%27%23dc3545%27%3e%3ccircle cx=%276%27 cy=%276%27 r=%274.5%27/%3e%3cpath stroke-linejoin=%27round%27 d=%27M5.8 3.6h.4L6 6.5z%27/%3e%3ccircle cx=%276%27 cy=%278.2%27 r=%27.6%27 fill=%27%23dc3545%27 stroke=%27none%27/%3e%3c/svg%3e");
+      background-repeat: no-repeat; */
+      /* background-position: ; */
+      /* background-size: 20px; */
+}
+
+/* input:invalid[focused="flase"] {
+ 
+} */
+
+/* .error {
+    display: none;
+} */
+
+.datePicker{
+    /* width:100%; */
+    /* border:1px solid black !important; */
+}
+
+
+.customDatePickerWidth, 
+.customDatePickerWidth > div.react-datepicker-wrapper, 
+.customDatePickerWidth > div > div.react-datepicker__input-container
+.customDatePickerWidth > div > div.react-datepicker__input-container input {
+   width: 100%;
+}
+
+
+
+.footer{
+    /* background-color: lime; */
+    bottom: 0;
+    height: 100px;
+    /* left: 0; */
+    /* position: absolute; */
+    /* right: 0; */
+}
