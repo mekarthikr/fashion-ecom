@@ -9,7 +9,7 @@ import { Pagination } from '@mui/material';
 const InventoryManagement = () => {
 
     const { user } = useSelector(state => state.userData)
-    const { products, product ,productCategory ,productSize ,currentPageNo ,totalPageCount ,itemsPerPage } = useSelector(state => state.productData)
+    const { products, product, productCategory, productSize, currentPageNo, totalPageCount, itemsPerPage } = useSelector(state => state.productData)
 
     const variation = { "color": "", "price": "", "stock": "" }
     const value = { "Size": "", "variation": [variation] }
@@ -27,7 +27,7 @@ const InventoryManagement = () => {
     const searchRef = useRef();
 
     useEffect(() => {
-        user._id && dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder,currentPage:currentPageNo,limit:itemsPerPage}, { retailerId: user._id }))
+        user._id && dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage: currentPageNo, limit: itemsPerPage }, { retailerId: user._id }))
         dispatch(getProductCategory())
     }, [user])
 
@@ -38,8 +38,8 @@ const InventoryManagement = () => {
 
 
     useEffect(() => {
-        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder,currentPage:currentPageNo,limit:itemsPerPage}, { retailerId: user._id }))
-    }, [categoryFilter, sortOrder, sort, searchFilter, filterStock ,currentPageNo,itemsPerPage])
+        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage: currentPageNo, limit: itemsPerPage }, { retailerId: user._id }))
+    }, [categoryFilter, sortOrder, sort, searchFilter, filterStock, currentPageNo, itemsPerPage])
 
     const setStockFilter = () => {
         setFilterStock(!filterStock)
@@ -69,12 +69,12 @@ const InventoryManagement = () => {
 
     const toggleProduct = (productid) => {
         dispatch(changeStatus(productid, { retailerId: user._id }))
-        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage:currentPageNo ,limit:itemsPerPage}, { retailerId: user._id }))
+        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage: currentPageNo, limit: itemsPerPage }, { retailerId: user._id }))
     }
 
     const submitInventory = (productId) => {
         dispatch(updateInventory(productId, { variation: productVariation }))
-        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage:currentPageNo ,limit:itemsPerPage}, { retailerId: user._id }))
+        dispatch(filterProducts({ stock: filterStock, category: categoryFilter, search: searchFilter, sort: sort, order: sortOrder, currentPage: currentPageNo, limit: itemsPerPage }, { retailerId: user._id }))
     }
 
     const addSearchFilter = (event) => {
@@ -92,7 +92,7 @@ const InventoryManagement = () => {
             else {
 
                 const index = selectedProduct.indexOf(value)
-                setSelectedProduct([...selectedProduct.slice(0, index), ...selectedProduct.slice(index + 1, selectedProduct.length)])
+                setSelectedProduct(selectedProduct => [...selectedProduct.slice(0, index), ...selectedProduct.slice(index + 1, selectedProduct.length)])
             }
         }
         else {
@@ -101,14 +101,19 @@ const InventoryManagement = () => {
     }
 
     const selectAllProduct = (event) => {
-        if (selectedProduct.length === products.length) {
-            setSelectedProduct([])
-        }
-        else {
-            const allProduct = products.map((product) => product._id)
-            setSelectedProduct(allProduct)
-        }
+        products.every((product) => selectedProduct.includes(product._id)) ?
+            // console.log("false")
+            products.map((product)=>{
+                selectedProduct.includes(product._id) && setSelectedProduct(selectedProduct => [...selectedProduct.slice(0, selectedProduct.indexOf(product._id)), ...selectedProduct.slice(selectedProduct.indexOf(product._id) + 1, selectedProduct.length)])
+            })
+            :
+            products.map((product) => {
+                !selectedProduct.includes(product._id) && setSelectedProduct(selectedProduct => [...selectedProduct, product._id])
+            })
     }
+
+    // setSelectedProduct([...selectedProduct.slice(0, index), ...selectedProduct.slice(index + 1, selectedProduct.length)])
+
 
     const setSortState = (sort) => {
         setSort(sort)
@@ -170,8 +175,9 @@ const InventoryManagement = () => {
                                 </select>
                             </div>
                         </div>
-                        {selectedProduct.length !== 0 && <div className="col-md-3">
-                            <h6 className="lead text-center align-middle">{selectedProduct.length} Product Selected</h6>
+                        {selectedProduct.length !== 0 && <div className="col-md-4" style={{"display":"inline"}}>
+                            <h6 className="lead text-center align-middle" style={{"display":"inline"}}>{selectedProduct.length} Product Selected</h6>
+                             {/* <button className="btn btn-outline-primary ml-2" style={{"display":"inline"}} >Set Active </button> */}
                         </div>}
                     </div>
                     <div className="col-md-3  ml-4 d-flex align-items-center" style={{ marginLeft: "45px" }}>
@@ -191,7 +197,7 @@ const InventoryManagement = () => {
                             <tr>
                                 <th style={{ width: "10px" }}>
                                     <div class="form-check" >
-                                        <input class="form-check-input" type="checkbox" checked={selectedProduct.length === products.length ? products.length === 0 ? false : true : false} onClick={(event) => { selectAllProduct(event) }} id="flexCheckChecked" />
+                                        <input class="form-check-input" type="checkbox" checked={products.length ? products.every((product) => selectedProduct.includes(product._id)) ? true :false :false} onClick={(event) => { selectAllProduct(event) }} id="flexCheckChecked" />
                                     </div>
                                 </th>
                                 <th className="fs-5 text-center " scope="col" >Image</th>
@@ -207,45 +213,50 @@ const InventoryManagement = () => {
                                 products.length ?
                                     <>{
                                         products
-                                        .map((e, index) => {
-                                            return (
-                                                <tr  >
-                                                    <td style={{ width: "10px" }}>
-                                                        <div class="form-check" >
-                                                            <input class="form-check-input" type="checkbox" checked={selectedProduct.includes(e._id)} value={e._id} id="flexCheckChecked" onClick={(event) => { toggleCheck(event) }} />
-                                                        </div>
-                                                    </td>
-                                                    <td ><img src={e.productImage} width={50} className="rounded mx-auto" /></td>
-                                                    <td className="fs-5 text-left align-middle" >{e.productName}</td>
-                                                    <td className="fs-5 text-left align-middle" >{e && e.category}</td>
-                                                    <td className="fs-5 text-center align-middle" >
-                                                        {e && e.variation.some((data) => {
-                                                            const value = data.variation.some((data) => {
-                                                                return data.stock !== "0"
-                                                            })
-                                                            return value
-                                                        }) ? "In Stock" : "Out of Stock"}
-                                                    </td>
-                                                    <td className="fs-5 text-center align-middle" >
-                                                        <button type="button" class="btn btn-primary ml-1 mr-1 " data-toggle="modal" data-target="#inventoryModal" onClick={() => { getSingleProduct(e._id) }}>
-                                                            Manage Inventory
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary ml-1 mr-1" onClick={() => { naviagte(`/retailer/product/${e._id}`) }}>
-                                                            Edit
-                                                        </button>
-                                                    </td>
-                                                    <td className="align-middle">
-                                                        <div class="form-check form-switch">
-                                                            <label class="form-check-label" style={{ width: "0px" }} for={`activationSwitch${index}`} >{e.status ? "Active" : "Inactive"}</label>
-                                                            <input class="form-check-input" type="checkbox" role="switch" onClick={() => { toggleProduct(e._id) }} checked={e.status} id={`activationSwitch${index}`} />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })}
+                                            .map((e, index) => {
+                                                return (
+                                                    <tr  >
+                                                        <td style={{ width: "10px" }}>
+                                                            <div class="form-check" >
+                                                                <input class="form-check-input" type="checkbox" checked={selectedProduct.includes(e._id)} value={e._id} id="flexCheckChecked" onClick={(event) => { toggleCheck(event) }} />
+                                                            </div>
+                                                        </td>
+                                                        <td ><img src={e.productImage} width={50} className="rounded mx-auto" /></td>
+                                                        <td className="fs-5 text-left align-middle" >{e.productName}</td>
+                                                        <td className="fs-5 text-left align-middle" >{e && e.category}</td>
+                                                        <td className="fs-5 text-center align-middle" >
+                                                            {e && e.variation.some((data) => {
+                                                                const value = data.variation.some((data) => {
+                                                                    return data.stock !== "0"
+                                                                })
+                                                                return value
+                                                            }) ? "In Stock" : "Out of Stock"}
+                                                        </td>
+                                                        <td className="fs-5 text-center align-middle" >
+                                                            <button type="button" class="btn btn-primary ml-1 mr-1 " data-toggle="modal" data-target="#inventoryModal" onClick={() => { getSingleProduct(e._id) }}>
+                                                                Manage Inventory
+                                                            </button>
+                                                            <button type="button" class="btn btn-primary ml-1 mr-1" onClick={() => { naviagte(`/retailer/product/${e._id}`) }}>
+                                                                Edit
+                                                            </button>
+                                                        </td>
+                                                        <td className="align-middle">
+                                                            <div class="form-check form-switch">
+                                                                <label class="form-check-label" style={{ width: "0px" }} for={`activationSwitch${index}`} >{e.status ? "Active" : "Inactive"}</label>
+                                                                <input class="form-check-input" type="checkbox" role="switch" onClick={() => { toggleProduct(e._id) }} checked={e.status} id={`activationSwitch${index}`} />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
                                     </>
                                     :
-                                    <><td className="text-center " colSpan={"7"} ><h2 className="mt-2 mb-2" >No Matching Product Found</h2></td></>
+                                    <>
+                                    <td className="text-center " colSpan={"7"} >
+                                        <h2 className="mt-2 mb-2" >No Matching Product Found</h2>
+                                        {/* <img src="https://cdn.dribbble.com/users/1121009/screenshots/11030107/media/25be2b86a12dbfd8da02db4cfcbfe50a.jpg" height={"500"} width={"500"} /> */}
+                                    </td>
+                                    </>
                             }
                         </tbody>
                     </table>
@@ -263,6 +274,11 @@ const InventoryManagement = () => {
                     <div className="d-flex justify-content-center  col-md-7">
                         <Pagination count={totalPageCount} page={currentPageNo} onChange={(event, value) => { dispatch(setPageNumber(value)) }} />
                     </div>
+                    {/* <div>
+                        <pre>
+                            {JSON.stringify(selectedProduct)}
+                        </pre>
+                    </div> */}
                 </div>
 
                 {/*  inventory management model  */}

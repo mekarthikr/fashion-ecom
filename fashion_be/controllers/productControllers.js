@@ -411,7 +411,10 @@ class productController {
                             $match: {...filter,"retailerId":pkg.Types.ObjectId(retailerId)}
                         },
                         {
-                            $sort:{[sortby]:Number(orderby)}
+                            $sort:{
+                                [sortby]:Number(orderby)
+                                // 'productName':1
+                            }
                         }
                         // ,
                         // { '$facet'    : {

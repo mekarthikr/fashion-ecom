@@ -412,7 +412,7 @@ export const filterProducts = (filter,retailerid) => {
         axios
             .post(`http://localhost:8000/products/filter?outofstock=${filter.stock}&category=${filter.category}&search=${filter.search}&sortby=${filter.sort}&orderby=${filter.order}&page=${filter.currentPage}&limit=${filter.limit}`,retailerid)
             .then((res) => {
-                console.log("response : ", res.data.products)
+                console.table("response : ", res.data.products)
                 disapatch(productList(res.data.products))
                 disapatch(pagination(res.data.pagination))
             })
